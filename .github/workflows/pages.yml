@@ -1,0 +1,93 @@
+name: Publish homepage
+
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', '.github/workflows/pages.yml']
+  pull_request:
+    paths: ['site/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check homepage and access links
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync, existsSync } from 'node:fs';
+          import { resolve } from 'node:path';
+          import { runInNewContext } from 'node:vm';
+          const html = readFileSync('site/index.html', 'utf8');
+          const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+          assert.equal(new Set(ids).size, ids.length, 'Page IDs must be unique');
+          for (const match of html.matchAll(/href="#([^"]+)"/g)) {
+            assert.ok(ids.includes(match[1]), 'Missing anchor: ' + match[1]);
+          }
+          for (const match of html.matchAll(/(?:src|href)="(\.\/[^"]+)"/g)) {
+            assert.ok(existsSync(resolve('site', match[1])), 'Missing asset: ' + match[1]);
+          }
+          assert.ok(!/<form\b/i.test(html), 'Family information belongs on the private service');
+          assert.ok(html.includes('Not affiliated with or sponsored by any school or school district.'));
+          const configContext = { window: {} };
+          runInNewContext(readFileSync('site/config.js', 'utf8'), configContext);
+          const code = readFileSync('site/links.js', 'utf8');
+          function render(links) {
+            const nodes = Object.fromEntries(['join-link', 'join-pending', 'signin-link', 'signin-pending', 'nav-signin'].map(id => [id, {
+              hidden: id.endsWith('-link'), href: id === 'nav-signin' ? '#access' : undefined
+            }]));
+            runInNewContext(code, { window: { HUSKY_LINKS: links }, document: { getElementById: id => {
+              assert.ok(ids.includes(id), 'Script references missing element: ' + id);
+              return nodes[id];
+            } }, URL });
+            return nodes;
+          }
+          let nodes = render({ membershipUrl: null, signInUrl: null });
+          assert.ok(nodes['join-link'].hidden && nodes['signin-link'].hidden);
+          assert.ok(!nodes['join-pending'].hidden && !nodes['signin-pending'].hidden);
+          nodes = render({ membershipUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/', signInUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/family' });
+          assert.ok(!nodes['join-link'].hidden && !nodes['signin-link'].hidden);
+          assert.ok(nodes['join-pending'].hidden && nodes['signin-pending'].hidden);
+          assert.equal(nodes['nav-signin'].href, 'https://talk.huskygaming.club/index.php/apps/huskyclub/family');
+          for (const value of ['', 'invalid', 'javascript:alert(1)', 'http://talk.huskygaming.club', 'https://user:password@talk.huskygaming.club']) {
+            nodes = render({ membershipUrl: value, signInUrl: value });
+            assert.ok(nodes['join-link'].hidden && nodes['signin-link'].hidden, 'Unsafe URL must remain inactive');
+          }
+          nodes = render({ membershipUrl: 'https://talk.huskygaming.club/', signInUrl: null });
+          assert.ok(!nodes['join-link'].hidden && nodes['signin-link'].hidden);
+          assert.equal(nodes['nav-signin'].href, '#access');
+          render(configContext.window.HUSKY_LINKS);
+          console.log('Homepage assets, anchors, independence wording and access link behavior passed.');
+          NODE
+  deploy:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

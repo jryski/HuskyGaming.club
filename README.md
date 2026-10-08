@@ -1,43 +1,71 @@
-# HuskyGaming.club
+# Husky Gaming Club
 
-Public homepage for Husky Gaming Club, a volunteer-run esports and gaming club for Saint Clair Shores students, their friends, and families. Independently operated, without school or school-district affiliation.
+Public homepage for a volunteer-run esports and gaming club for Saint Clair Shores students, their friends and families. Independently operated; not affiliated with or sponsored by any school or school district.
 
-## Status
+## Architecture and current status
 
-This is a static draft adapted from the text of the preserved `homepage-preview.png` and Jesse's updated club description. It is not the recovered original application source. The original husky/key artwork was unavailable; the draft includes a new lightweight SVG illustration that can be replaced when the source is recovered.
+- Public homepage: GitHub Pages at `huskygaming.club`.
+- Private membership, family dashboard and Nextcloud Talk: the existing dedicated Unraid instance, intended for `talk.huskygaming.club`.
+- These are intended destinations until domain settings and deployment are verified.
+- The dedicated backend source was recovered and matched the deployed files during the October 7 recovery. It does not need rebuilding. Current server access is unavailable in this continuation, so new-address onboarding and calls remain unverified.
+- Membership and sign-in remain marked “opening soon” until their public HTTPS destinations pass verification. The static homepage collects no family information.
+- This repository contains the public homepage illustration; the original backend husky-and-key crest remains with the recovered application.
 
-The recovery handoff reports an existing private Nextcloud deployment, parent requests, Jesse approval, welcome email and child enrollment. Those are recorded results, not live verification. Locutus was offline through Desktop Commander during this continuation. The original chat-reading API also failed. Its backend source and public service URLs remain unverified.
+Private infrastructure, change history and rollback instructions are recorded in Jesse's Supabase wiki at `homelab/husky-club`. Do not put credentials, private room links, backups or family records in this repository.
 
-Membership and sign-in links deliberately remain inactive. The page collects no family information and does not implement a second enrollment system.
+## Preview and checks
 
-## Preview
-
-No install or build step is needed:
+No build step is required. Serve `site/` locally, for example:
 
 ```sh
 python3 -m http.server 8080 --directory site --bind 127.0.0.1
 ```
 
-Open http://127.0.0.1:8080. Relative assets support both the repository subpath and a custom domain. All fonts and illustrations are local. With JavaScript disabled, the content and pending-access notices remain readable.
+Open http://127.0.0.1:8080. Relative assets work on the repository subpath and the custom domain.
 
-## Connect the existing club service
+The `Publish homepage` workflow checks local assets, page anchors, school-independence wording, and pending/configured/invalid access-link behavior. Pull requests run validation only. Main-branch pushes and manual runs validate before deploying only `site/`. These checks do not verify handset calls or the private backend.
 
-1. Recover the original homepage/backend source from Locutus and verify the private club deployment. Preserve existing accounts and services.
-2. Verify a public HTTPS parent-onboarding URL and a public HTTPS member-login URL. The proposed `talk.huskygaming.club` is not yet confirmed.
-3. Update `site/config.js` with those two verified public URLs. Use the existing backend's onboarding page rather than submitting forms from GitHub Pages. Never commit tokens, credentials, child details or private room links.
-4. Verify external parent requests, approval, welcome email, family access boundaries and real calls before distributing invitations or a QR code.
+## Publish the homepage
 
-## Publish after review
+1. In repository **Settings → Pages**, set **Source: GitHub Actions**.
+2. Merge the homepage change. If Pages is enabled afterward, rerun the failed workflow or manually run **Publish homepage**.
+3. Verify the successful deployment at https://jryski.github.io/HuskyGaming.club/.
+4. In Pages settings, save **Custom domain: huskygaming.club** before pointing DNS at Pages.
+5. Once Cloudflare's zone is active, replace the apex parking records with these GitHub Pages records, initially **DNS only**:
 
-Merge the reviewed PR, then choose **Settings → Pages → Source → GitHub Actions**. Run **Publish homepage** if enabling Pages occurs after the merge. Only `site/` is uploaded. Nothing deploys from the draft branch.
+| Type | Name | Value |
+| --- | --- | --- |
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | jryski.github.io |
 
-The expected default URL is https://jryski.github.io/HuskyGaming.club/ once Pages is enabled and a deployment succeeds.
+Preserve unrelated records. Keep `talk` routed separately through the existing Cloudflare Tunnel. Save the previous records privately before changing them. GitHub Actions deployments use the custom domain saved in Pages settings; a `CNAME` file does not configure that setting.
 
-For `huskygaming.club`, verify domain ownership with GitHub, set the Pages custom domain first, then update DNS. Configure the apex and optional `www` for Pages; keep the existing club-service subdomain routing separate. If using Cloudflare DNS, first verify its zone and registrar nameserver delegation. Do not overwrite existing service records blindly. Enforce HTTPS once the certificate is ready.
+6. Verify DNS and the custom-domain page, then enable **Enforce HTTPS** when GitHub's certificate is ready.
 
-GitHub's current instructions:
+[GitHub Pages domain instructions](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
 
-- https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
-- https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+## Connect membership and Talk
 
-No live DNS, Pages setting, container or account changes were made as part of preparing this draft.
+1. Restore authorized access to the existing dedicated server. Confirm current health and preserve its accounts, files, isolation and backups.
+2. Change the dedicated instance's trusted host and canonical URL to `https://talk.huskygaming.club`, retaining the prior values for rollback. Welcome emails, password recovery and Talk login must all use this service address.
+3. Publish only the `talk.huskygaming.club` hostname through the existing tunnel. Use the verified dedicated origin from the private handoff.
+4. Verify public HTTPS, the membership page, authenticated family dashboard, password recovery, and browser-to-Talk grant/poll.
+5. Set `site/config.js` to the verified endpoints:
+
+```js
+window.HUSKY_LINKS = Object.freeze({
+  membershipUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/',
+  signInUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/family'
+});
+```
+
+6. Verify a real parent request, owner notification, approval and welcome email. Check family permissions and cellular-to-Wi-Fi calls, including voice while Minecraft runs. Distribute invitations or a QR code only after acceptance.
+
+## Undo
+
+Revert the recorded homepage merge to restore the previous repository contents. Disable Pages and remove its custom-domain setting separately if unpublishing. Restore only the recorded Husky DNS changes and club tunnel hostname.
+
+The dedicated backend has its own shutdown procedure in the private wiki. Disable its watchdog before stopping its containers. Keep data and backups until Jesse expressly chooses deletion; preserve family-cloud and Minecraft services.

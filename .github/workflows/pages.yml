@@ -37,7 +37,7 @@ jobs:
             assert.ok(ids.includes(match[1]), 'Missing anchor: ' + match[1]);
           }
           for (const match of html.matchAll(/(?:src|href)="(\.\/[^"]+)"/g)) {
-            assert.ok(existsSync(resolve('site', match[1])), 'Missing asset: ' + match[1]);
+            assert.ok(existsSync(resolve('site', match[1].split(/[?#]/)[0])), 'Missing asset: ' + match[1]);
           }
           assert.ok(!/<form\b/i.test(html), 'Family information belongs on the private service');
           assert.ok(html.includes('Not affiliated with or sponsored by any school or school district.'));

@@ -41,6 +41,15 @@ jobs:
           }
           assert.ok(!/<form\b/i.test(html), 'Family information belongs on the private service');
           assert.ok(html.includes('Not affiliated with or sponsored by any school or school district.'));
+          const clubApp = 'https://talk.huskygaming.club/apps/huskyclub';
+          const membershipUrl = 'https://talk.huskygaming.club/index.php/apps/huskyclub/';
+          const signInUrl = clubApp + '/family';
+          const hrefs = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)].map(match => match[1]);
+          assert.ok(hrefs.includes(membershipUrl), 'Missing parent request link');
+          for (const route of ['family', 'setup', 'play']) {
+            assert.ok(hrefs.includes(clubApp + '/' + route), 'Missing member route: ' + route);
+            assert.ok(!hrefs.includes(membershipUrl + route), 'Use the browser login route for ' + route);
+          }
           const configContext = { window: {} };
           runInNewContext(readFileSync('site/config.js', 'utf8'), configContext);
           const code = readFileSync('site/links.js', 'utf8');
@@ -57,10 +66,10 @@ jobs:
           let nodes = render({ membershipUrl: null, signInUrl: null });
           assert.ok(nodes['join-link'].hidden && nodes['signin-link'].hidden);
           assert.ok(!nodes['join-pending'].hidden && !nodes['signin-pending'].hidden);
-          nodes = render({ membershipUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/', signInUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/family' });
+          nodes = render({ membershipUrl, signInUrl });
           assert.ok(!nodes['join-link'].hidden && !nodes['signin-link'].hidden);
           assert.ok(nodes['join-pending'].hidden && nodes['signin-pending'].hidden);
-          assert.equal(nodes['nav-signin'].href, 'https://talk.huskygaming.club/index.php/apps/huskyclub/family');
+          assert.equal(nodes['nav-signin'].href, signInUrl);
           for (const value of ['', 'invalid', 'javascript:alert(1)', 'http://talk.huskygaming.club', 'https://user:password@talk.huskygaming.club']) {
             nodes = render({ membershipUrl: value, signInUrl: value });
             assert.ok(nodes['join-link'].hidden && nodes['signin-link'].hidden, 'Unsafe URL must remain inactive');
@@ -68,7 +77,10 @@ jobs:
           nodes = render({ membershipUrl: 'https://talk.huskygaming.club/', signInUrl: null });
           assert.ok(!nodes['join-link'].hidden && nodes['signin-link'].hidden);
           assert.equal(nodes['nav-signin'].href, '#access');
-          render(configContext.window.HUSKY_LINKS);
+          nodes = render(configContext.window.HUSKY_LINKS);
+          assert.equal(nodes['join-link'].href, membershipUrl);
+          assert.equal(nodes['signin-link'].href, signInUrl);
+          assert.equal(nodes['nav-signin'].href, signInUrl);
           console.log('Homepage assets, anchors, independence wording and access link behavior passed.');
           NODE
   deploy:

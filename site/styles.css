@@ -5,3 +5,20 @@
 
 .setup-shortcut{display:block;flex-basis:100%;font-size:16px;font-weight:700;min-height:44px;padding:9px 0}.setup-section{background:#F6F9FF;border-top:1px solid #D4E1F5;padding:55px 0}.setup-layout{display:grid;grid-template-columns:1.08fr 1fr;gap:44px;align-items:start}.setup-steps{counter-reset:setup;list-style:none;padding:0;margin:0}.setup-steps>li{counter-increment:setup;position:relative;padding:0 0 26px 54px}.setup-steps>li:before{content:counter(setup);position:absolute;left:0;top:0;width:36px;height:36px;display:grid;place-items:center;background:#1457D9;color:white;border-radius:12px;font:700 23px Fredoka}.setup-steps h3,.setup-help h3,.qr-intro h3{font-size:24px;line-height:1.25;margin-bottom:10px}.setup-steps p{font-size:17px;margin:8px 0}.server-address{background:white;border:1px solid #B8CCE9;border-radius:12px;padding:12px;overflow-wrap:anywhere;color:#12316B}.setup-help{background:white;border:1px solid #D4E1F5;border-radius:20px;padding:24px}.setup-help p{font-size:16px;margin-bottom:14px}.setup-help p:last-child{margin:0}.qr-intro p{font-size:17px}.qr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.qr-card{background:white;border:1px solid #D4E1F5;box-shadow:0 5px 18px #12316B08;border-radius:20px;text-align:center;padding:22px 16px;display:flex;flex-direction:column;align-items:center}.qr-card h3{font-size:22px;margin:0 0 12px}.qr-card img{width:180px;max-width:100%;height:auto;image-rendering:pixelated}.qr-card p{font-size:16px;line-height:1.45;margin:12px 0 18px;flex:1}.qr-card .button{font-size:15px;line-height:1.35;min-height:54px;width:100%;padding:12px;box-shadow:none;border-radius:12px}.qr-download{min-height:44px;padding:12px 4px 0;font-size:14px;font-weight:700}.qr-note{font-size:14px;line-height:1.5;margin:18px 0 0}.access{margin-top:40px}@media(max-width:900px){.setup-layout{grid-template-columns:1fr;gap:32px}.qr-card img{width:180px}}@media(max-width:460px){.qr-grid{grid-template-columns:1fr}.qr-card{display:grid;grid-template-columns:112px 1fr;gap:10px 14px;text-align:left;padding:20px}.qr-card img{grid-column:1;grid-row:1/4;width:112px}.qr-card h3{grid-column:2;margin:0;font-size:21px}.qr-card p{grid-column:2;margin:0;font-size:15px}.qr-card .button,.qr-download{grid-column:1/-1;text-align:center}.setup-steps>li{padding-left:48px}.setup-section{padding:35px 0}.setup-shortcut{font-size:15px}.server-address{font-size:15px}}
 @media print{nav,.skip-link,.hero,.club-section,.parents,.access,footer,.team-strip,.qr-download{display:none!important}.setup-section{padding:0;background:white}.setup-layout{display:block}.qr-grid{grid-template-columns:repeat(2,1fr)}.qr-card{break-inside:avoid}.setup-help{break-inside:avoid}.button{box-shadow:none}.setup-section a{color:#12316B}.qr-card .button{background:white;color:#12316B;border:1px solid #12316B}}
+
+/* Keep the first useful action ahead of decoration, especially on phones. */
+.hero{padding-top:32px;padding-bottom:36px;grid-template-columns:1.3fr 1fr}
+.hero h1{font-size:clamp(36px,4.2vw,54px)}
+.hero .intro{font-size:19px;max-width:560px}
+.start-actions{display:flex;flex-direction:column;align-items:stretch;gap:14px;max-width:470px}
+.start-actions .button{text-align:center;line-height:1.35}
+.button-secondary{background:var(--ice);color:var(--deep);border:2px solid var(--blue);box-shadow:none}
+.button-secondary:hover{box-shadow:none}
+.start-actions .text-link{text-align:center}
+.approval-note{font-size:16px;line-height:1.5;margin:22px 0 0;max-width:560px}
+.hero .setup-shortcut{margin-top:8px}
+.hero .mascot{max-width:340px}
+footer a{color:white}
+@media(max-width:760px){.hero{grid-template-columns:1fr;padding-top:24px;gap:0}.hero .mascot-card{display:none}.hero h1{font-size:38px}.hero .intro{font-size:18px}.start-actions{max-width:none}.approval-note{font-size:16px}}
+@media print{.setup-section{border:0}.setup-section .section-heading{margin-bottom:20px}}
+@media(max-width:380px){.masthead{gap:10px;padding-left:18px;padding-right:18px}.brand{font-size:16px;gap:8px}.brand img{width:42px;height:42px}nav .signin{font-size:13px;padding:9px 10px}}

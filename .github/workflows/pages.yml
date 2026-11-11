@@ -50,6 +50,20 @@ jobs:
             assert.ok(hrefs.includes(clubApp + '/' + route), 'Missing member route: ' + route);
             assert.ok(!hrefs.includes(membershipUrl + route), 'Use the browser login route for ' + route);
           }
+          const hero = html.slice(html.indexOf('<main id="main">'), html.indexOf('<section id="get-started"'));
+          assert.ok(hero.includes('New to Husky Club?') && hero.includes('Start here.'));
+          for (const [label, url] of [
+            ['New family? Request to join', membershipUrl],
+            ['Approved? Continue family setup', clubApp + '/setup'],
+            ['Already set up? Member Sign In', signInUrl]
+          ]) {
+            assert.ok(hero.includes('href="' + url + '">' + label), 'Missing first-screen action: ' + label);
+          }
+          assert.ok(hero.includes('Already sent a request?') && hero.includes('After approval'));
+          assert.ok(html.indexOf('id="get-started"') < html.indexOf('id="club"'), 'Setup must precede game promotion');
+          assert.ok(html.indexOf('id="get-started"') < html.indexOf('id="parents"'), 'Setup must precede the parent overview');
+          assert.ok(html.includes('Their Xbox gamertag is separate from their club username.'));
+          assert.ok(html.includes('Phone or tablet app (optional)'));
           const configContext = { window: {} };
           runInNewContext(readFileSync('site/config.js', 'utf8'), configContext);
           const code = readFileSync('site/links.js', 'utf8');

@@ -2,5 +2,5 @@
 // Do not put credentials, tokens, or private room links here.
 window.HUSKY_LINKS = Object.freeze({
   membershipUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/',
-  signInUrl: 'https://talk.huskygaming.club/index.php/apps/huskyclub/family'
+  signInUrl: 'https://talk.huskygaming.club/apps/huskyclub/family'
 });

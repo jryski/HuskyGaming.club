@@ -49,3 +49,9 @@ footer a{color:white}
 .report-note{margin:0;padding-top:18px;border-top:1px solid #B8CCE9;overflow-wrap:anywhere}
 @media(max-width:760px){.info-section{padding:36px 0}.family-links{gap:4px 18px}.family-links a{display:inline-flex;font-size:15px}}
 @media print{.info-section{display:none}}
+
+.oversight-list{margin:0 0 24px}
+.oversight-list div{display:grid;grid-template-columns:160px 1fr;gap:20px;padding:14px 0;border-top:1px solid #D4E1F5}
+.oversight-list dt{font-weight:700;color:var(--deep)}
+.oversight-list dd{margin:0}
+@media(max-width:600px){.oversight-list div{grid-template-columns:1fr;gap:4px}}

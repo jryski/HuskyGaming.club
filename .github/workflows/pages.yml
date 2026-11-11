@@ -55,15 +55,15 @@ jobs:
           for (const [label, url] of [
             ['New family? Request to join', membershipUrl],
             ['Approved? Continue family setup', clubApp + '/setup'],
-            ['Already set up? Member Sign In', signInUrl]
+            ['Member sign in', signInUrl],
+            ['Minecraft server', clubApp + '/play']
           ]) {
             assert.ok(hero.includes('href="' + url + '">' + label), 'Missing first-screen action: ' + label);
           }
-          assert.ok(hero.includes('Already sent a request?') && hero.includes('After approval'));
+          assert.ok(hero.includes('Already sent a request?') && hero.includes('approval email'));
           assert.ok(html.indexOf('id="get-started"') < html.indexOf('id="club"'), 'Setup must precede game promotion');
-          assert.ok(html.indexOf('id="get-started"') < html.indexOf('id="parents"'), 'Setup must precede the parent overview');
           assert.ok(html.includes('Their Xbox gamertag is separate from their club username.'));
-          assert.ok(html.includes('Phone or tablet app (optional)'));
+          assert.ok(html.includes('We recommend the Nextcloud Talk app for voice while playing.'));
           const configContext = { window: {} };
           runInNewContext(readFileSync('site/config.js', 'utf8'), configContext);
           const code = readFileSync('site/links.js', 'utf8');

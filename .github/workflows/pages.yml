@@ -95,7 +95,24 @@ jobs:
           assert.equal(nodes['join-link'].href, membershipUrl);
           assert.equal(nodes['signin-link'].href, signInUrl);
           assert.equal(nodes['nav-signin'].href, signInUrl);
-          console.log('Homepage assets, anchors, independence wording and access link behavior passed.');
+          const minecraft = readFileSync('site/minecraft/index.html', 'utf8');
+          assert.ok(html.includes('href="./minecraft/"'), 'Homepage must link to the Minecraft page');
+          const minecraftIds = [...minecraft.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+          assert.equal(new Set(minecraftIds).size, minecraftIds.length, 'Minecraft IDs must be unique');
+          for (const [, target] of minecraft.matchAll(/(?:src|href)="([^"]+)"/g)) {
+            if (target.startsWith('#')) assert.ok(minecraftIds.includes(target.slice(1)), 'Missing Minecraft anchor: ' + target);
+            if (target.startsWith('../')) {
+              const [path, fragment] = target.split('#');
+              assert.ok(existsSync(resolve('site/minecraft', path.split('?')[0])), 'Missing Minecraft asset: ' + target);
+              if (fragment) assert.ok(ids.includes(fragment), 'Missing homepage anchor from Minecraft: ' + fragment);
+            }
+          }
+          assert.ok(!/<form\b/i.test(minecraft));
+          assert.ok(minecraft.includes('Not affiliated with or sponsored by any school or school district.'));
+          assert.ok(minecraft.includes('href="' + clubApp + '/play"'));
+          assert.ok(minecraft.includes('mailto:hello@huskygaming.club?subject=Minecraft%20world%20feature%20request'));
+          assert.ok(minecraft.includes('mailto:reports@huskygaming.club'));
+          console.log('Homepage and Minecraft assets, anchors, independence wording and access links passed.');
           NODE
   deploy:
     needs: validate

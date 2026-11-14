@@ -61,3 +61,10 @@ footer a{color:white}
 .feedback ul{padding-left:22px;margin:0}
 .feedback li{margin-bottom:8px}
 .feedback a{font-weight:700;text-underline-offset:3px}
+
+.minecraft-page h1{font-size:clamp(38px,6vw,58px);line-height:1.08;margin-bottom:18px}
+.minecraft-page .intro{max-width:600px}
+.minecraft-page .actions+p{margin-top:22px}
+.minecraft-page dt small{display:inline-block;margin-top:3px;color:var(--blue);font-size:14px}
+@media(max-width:760px){.masthead nav a.minecraft-nav{display:inline-flex;align-items:center;min-height:44px;font-size:14px;padding:6px 8px}.minecraft-page .actions{align-items:stretch}}
+@media(max-width:420px){.masthead nav a.minecraft-nav{display:none}}

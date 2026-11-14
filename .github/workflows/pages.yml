@@ -112,6 +112,8 @@ jobs:
           assert.ok(minecraft.includes('href="' + clubApp + '/play"'));
           assert.ok(minecraft.includes('mailto:hello@huskygaming.club?subject=Minecraft%20world%20feature%20request'));
           assert.ok(minecraft.includes('mailto:reports@huskygaming.club'));
+          assert.ok(minecraft.includes('shared modern city') && minecraft.includes('skyscrapers'));
+          assert.ok(!/medieval|guildhall|spires/i.test(minecraft), 'Do not publish superseded city designs');
           console.log('Homepage and Minecraft assets, anchors, independence wording and access links passed.');
           NODE
   deploy:
